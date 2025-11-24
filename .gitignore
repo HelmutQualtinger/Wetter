@@ -1,3 +1,9 @@
 .env
 .venv/*
 geo_data/*
+.DS_Store
+__pycache__/
+*.pyc
+.vscode/
+.idea/
+.ipynb_checkpoints/
