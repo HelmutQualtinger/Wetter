@@ -116,113 +116,51 @@ def update_weather_dashboard(selected_city):
 
     # --- Gauges ---
     def create_gauge(value, title, unit, value_range, colors, bar_color):
-        import math
-        import numpy as np
-
         min_val, max_val = value_range
 
-        # Calculate angle for needle (0-360 degrees, where 0 is at top)
-        percentage = (value - min_val) / (max_val - min_val)
-        angle = percentage * 360
-
-        # Create circular gauge using pie chart
-        num_zones = len(colors)
-        zone_values = [100 / num_zones] * num_zones
-        zone_colors = [c['color'] for c in colors]
-
-        fig = go.Figure(go.Pie(
-            values=zone_values,
-            marker=dict(
-                colors=zone_colors,
-                line=dict(color='#1a1a2e', width=2)
-            ),
-            hole=0.65,
-            hoverinfo='skip',
-            showlegend=False,
-            sort=False,
-            direction='clockwise',
-            rotation=0,
-            textinfo='none'
+        fig = go.Figure(go.Indicator(
+            mode="gauge+number",
+            value=value,
+            domain={'x': [0, 1], 'y': [0, 1]},
+            title={
+                'text': title,
+                'font': {'size': 16, 'color': '#FFFFFF', 'family': 'Arial Black'}
+            },
+            number={
+                'font': {'size': 44, 'color': '#FFFFFF', 'family': 'Arial Black'},
+                'suffix': f" {unit}",
+                'valueformat': '.1f'
+            },
+            gauge={
+                'axis': {
+                    'range': [min_val, max_val],
+                    'tickwidth': 3,
+                    'tickcolor': '#FFFFFF',
+                    'ticklen': 12,
+                    'tickfont': {'size': 11, 'color': '#FFFFFF', 'family': 'Arial'}
+                },
+                'bar': {
+                    'color': '#FFD700',
+                    'thickness': 1.0,
+                    'line': {'color': '#FFFFFF', 'width': 3}
+                },
+                'bgcolor': 'rgba(50,50,80,0.4)',
+                'borderwidth': 6,
+                'bordercolor': '#00D9FF',
+                'steps': colors,
+                'threshold': {
+                    'line': {'color': '#FFFFFF', 'width': 4},
+                    'thickness': 1.0,
+                    'value': value
+                }
+            }
         ))
 
-        # Add numeric scale labels around the ring
-        num_labels = 11  # Number of scale labels
-        for i in range(num_labels):
-            angle = (i / (num_labels - 1)) * 360
-            angle_rad = math.radians(angle)
-
-            # Position labels around the ring at radius 0.78
-            radius = 0.78
-            x = 0.5 + radius * math.sin(angle_rad)
-            y = 0.5 + radius * math.cos(angle_rad)
-
-            label_value = min_val + (i / (num_labels - 1)) * (max_val - min_val)
-
-            fig.add_annotation(
-                text=f"{label_value:.0f}",
-                x=x, y=y,
-                showarrow=False,
-                font=dict(size=10, color='#FFFFFF', family='Arial'),
-                xref='paper', yref='paper'
-            )
-
-        # Add needle using a line from center to edge
-        needle_length = 0.55
-        angle_rad = math.radians(angle)
-        needle_x = [0.5, 0.5 + needle_length * math.sin(angle_rad)]
-        needle_y = [0.5, 0.5 + needle_length * math.cos(angle_rad)]
-
-        fig.add_shape(
-            type='line',
-            x0=needle_x[0], y0=needle_y[0],
-            x1=needle_x[1], y1=needle_y[1],
-            line=dict(color='#FFFFFF', width=5),
-            xref='paper', yref='paper',
-            layer='above'
-        )
-
-        # Add circle at center
-        fig.add_shape(
-            type='circle',
-            x0=0.45, y0=0.45, x1=0.55, y1=0.55,
-            fillcolor='#FFFFFF',
-            line=dict(color='#000000', width=2),
-            xref='paper', yref='paper',
-            layer='above'
-        )
-
-        # Add value display
-        fig.add_annotation(
-            text=f"{value:.1f}",
-            x=0.5, y=0.35,
-            showarrow=False,
-            font=dict(size=40, color='#FFFFFF', family='Arial Black'),
-            xref='paper', yref='paper'
-        )
-
-        # Add unit
-        fig.add_annotation(
-            text=unit,
-            x=0.5, y=0.27,
-            showarrow=False,
-            font=dict(size=14, color='#CCCCCC', family='Arial'),
-            xref='paper', yref='paper'
-        )
-
-        # Add title
-        fig.add_annotation(
-            text=title,
-            x=0.5, y=0.95,
-            showarrow=False,
-            font=dict(size=14, color='#FFFFFF', family='Arial'),
-            xref='paper', yref='paper'
-        )
-
         fig.update_layout(
-            height=300,
-            margin=dict(l=10, r=10, t=40, b=10),
+            height=320,
+            margin=dict(l=20, r=20, t=70, b=20),
             paper_bgcolor='rgba(0,0,0,0)',
-            plot_bgcolor='rgba(0,0,0,0)',
+            plot_bgcolor='rgba(25,25,50,0.5)',
             font={'color': 'white', 'family': 'Arial, sans-serif'}
         )
 
@@ -254,19 +192,36 @@ def update_weather_dashboard(selected_city):
     # --- Windrose ---
     wind_direction = city_data['wind_direction_10m']
     wind_speed = city_data['wind_speed_10m']
+    wind_gusts = city_data['wind_gusts_10m']
 
-    wind_rose_fig = go.Figure(go.Barpolar(
+    wind_rose_fig = go.Figure()
+
+    # Add wind speed bar
+    wind_rose_fig.add_trace(go.Barpolar(
         r=[wind_speed],
         theta=[wind_direction],
-        width=[15], # Breite des Keils
+        width=[12],
+        name='Wind Speed',
         marker_color=["#2E91E5"],
         marker_line_color="white",
         marker_line_width=1,
         opacity=0.8
     ))
 
+    # Add wind gusts bar
+    wind_rose_fig.add_trace(go.Barpolar(
+        r=[wind_gusts],
+        theta=[wind_direction],
+        width=[12],
+        name='Wind Gusts',
+        marker_color=["#FF6B6B"],
+        marker_line_color="white",
+        marker_line_width=1,
+        opacity=0.6
+    ))
+
     wind_rose_fig.update_layout(
-        title={'text': f"Wind (Geschw: {wind_speed:.1f} km/h)", 'x': 0.5, 'font': {'color': 'white'}},
+        title={'text': f"Wind: {wind_speed:.1f} km/h | Gusts: {wind_gusts:.1f} km/h", 'x': 0.5, 'font': {'color': 'white'}},
         paper_bgcolor='rgba(0,0,0,0)',
         font_color='white',
         polar=dict(
@@ -283,7 +238,7 @@ def update_weather_dashboard(selected_city):
             ),
             radialaxis=dict(
                 visible=True,
-                range=[0, max(50, wind_speed * 1.2)] # Dynamischer Bereich
+                range=[0, 20]  # Fixed maximum at 20 km/h
             )
         )
     )
