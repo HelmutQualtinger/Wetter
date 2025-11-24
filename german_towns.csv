@@ -1,0 +1,81 @@
+town,federal_state,longitude,latitude,inhabitants
+Berlin,Berlin,13.3386522,52.503379,3520031
+Hamburg,Hamburg,9.9753758,53.5909051,1787408
+Munich (München),Bavaria,11.5325626,48.1768926,1450381
+Cologne (Köln),North Rhine-Westphalia,6.8914429,50.9575459,1060582
+Frankfurt am Main,Hesse,8.6820917,50.1106444,732688
+Stuttgart,Baden-Württemberg,9.1800132,48.7784485,623738
+Düsseldorf,North Rhine-Westphalia,6.7763137,51.2254018,612178
+Dortmund,North Rhine-Westphalia,7.4652789,51.5142273,586181
+Essen,North Rhine-Westphalia,7.0158171,51.4582235,582624
+Leipzig,Saxony,12.3747329,51.3406321,560472
+Bremen,Bremen,8.8071646,53.0758196,557464
+Dresden,Saxony,13.7381437,51.0493286,543825
+Hanover (Hannover),Lower Saxony,9.7063547,52.3571985,532163
+Nuremberg (Nürnberg),Bavaria,11.0871723,49.4287787,509975
+Duisburg,North Rhine-Westphalia,6.759562,51.434999,491231
+Bochum,North Rhine-Westphalia,7.2196635,51.4818111,364742
+Wuppertal,North Rhine-Westphalia,7.1780374,51.264018,350046
+Bielefeld,North Rhine-Westphalia,8.531007,52.0191005,333090
+Bonn,North Rhine-Westphalia,7.1024635,50.7352621,318809
+Münster,North Rhine-Westphalia,7.6251879,51.9625101,310039
+Karlsruhe,Baden-Württemberg,8.4034195,49.0068705,307755
+Mannheim,Baden-Württemberg,8.4673098,49.4892913,305780
+Augsburg,Bavaria,10.8979522,48.3690341,286374
+Wiesbaden,Hesse,8.2416556,50.0820384,276218
+Gelsenkirchen,North Rhine-Westphalia,7.0960124,51.5110321,260368
+Mönchengladbach,North Rhine-Westphalia,6.4353792,51.1947131,259996
+Braunschweig,Lower Saxony,10.5236066,52.2646577,251364
+Chemnitz,Saxony,12.918914,50.8323531,248645
+Kiel,Schleswig-Holstein,10.135555,54.3227085,246306
+Aachen,North Rhine-Westphalia,6.083862,50.776351,245885
+Halle (Saale),Saxony-Anhalt,11.9712985,51.4824354,236991
+Magdeburg,Saxony-Anhalt,11.6400789,52.1314783,235723
+Freiburg im Breisgau,Baden-Württemberg,7.8494005,47.9960901,226393
+Krefeld,North Rhine-Westphalia,6.5623343,51.3331205,225144
+Lübeck,Schleswig-Holstein,10.684738,53.866444,216253
+Oberhausen,North Rhine-Westphalia,6.8514435,51.4696137,210934
+Erfurt,Thuringia,11.0287364,50.9777974,210118
+Mainz,Rhineland-Palatinate,8.2736253,49.9995205,209779
+Rostock,Mecklenburg-Vorpommern,12.1400211,54.0886707,206011
+Kassel,Hesse,9.4978479,51.3157833,197984
+Hagen,North Rhine-Westphalia,7.473296,51.3582945,189044
+Hamm,North Rhine-Westphalia,7.8191185,51.681281,179397
+Saarbrücken,Saarland,6.996379,49.234362,178151
+Mülheim an der Ruhr,North Rhine-Westphalia,6.8829192,51.4272925,169278
+Potsdam,Brandenburg,13.0591397,52.4009309,167745
+Ludwigshafen am Rhein,Rhineland-Palatinate,8.4381568,49.4704113,164718
+Oldenburg,Lower Saxony,8.2146017,53.1389753,163830
+Leverkusen,North Rhine-Westphalia,6.9881194,51.0324743,163487
+Osnabrück,Lower Saxony,8.047635,52.2719595,162403
+Solingen,North Rhine-Westphalia,7.0845893,51.1721629,158726
+Heidelberg,Baden-Württemberg,8.694724,49.4093582,156267
+Herne,North Rhine-Westphalia,7.219985,51.5380394,155851
+Neuss,North Rhine-Westphalia,6.6916476,51.1981778,155414
+Darmstadt,Hesse,8.651177,49.872775,155353
+Paderborn,North Rhine-Westphalia,8.752653,51.7177044,148126
+Regensburg,Bavaria,12.0974869,49.0195333,145465
+Ingolstadt,Bavaria,11.4250395,48.7630165,132438
+Würzburg,Bavaria,9.9309779,49.7933723,124873
+Fürth,Bavaria,10.9587203,49.4885711,124171
+Wolfsburg,Lower Saxony,10.7861682,52.4205588,124045
+Offenbach am Main,Hesse,8.7610698,50.1055002,123734
+Ulm,Baden-Württemberg,9.9912458,48.3984968,122636
+Heilbronn,Baden-Württemberg,9.218655,49.142291,122567
+Pforzheim,Baden-Württemberg,8.7025509,48.890934,122247
+Göttingen,Lower Saxony,9.9351811,51.5328328,118914
+Bottrop,North Rhine-Westphalia,6.929204,51.521581,117143
+Trier,Rhineland-Palatinate,6.6441878,49.7596208,114914
+Recklinghausen,North Rhine-Westphalia,7.1978546,51.6143815,114330
+Reutlingen,Baden-Württemberg,9.2114144,48.4919508,114310
+Bremerhaven,Bremen,8.5851945,53.5505392,114025
+Koblenz,Rhineland-Palatinate,7.5943951,50.3533278,112586
+Bergisch Gladbach,North Rhine-Westphalia,7.1277379,50.9929303,111366
+Jena,Thuringia,11.5879359,50.9281717,109527
+Remscheid,North Rhine-Westphalia,7.1943544,51.1798706,109499
+Erlangen,Bavaria,10.9812072,49.5891571,108336
+Moers,North Rhine-Westphalia,6.62843,51.451283,104529
+Siegen,North Rhine-Westphalia,8.0256131,50.8751175,102355
+Hildesheim,Lower Saxony,9.9518083,52.1527188,101667
+Salzgitter,Lower Saxony,10.3593147,52.1503721,101079
+Gütersloh,North Rhine-Westphalia,8.3782078,51.9063997,97586
