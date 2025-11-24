@@ -6,8 +6,8 @@ import re
 import pandas as pd
 
 def get_population(text):
-    # Remove references like [1] and commas/dotspro
-    text = re.sub(r'[[^]]*]', '', text)
+    # Remove references and commas/dots
+    text = re.sub(r'\[[^\]]*\]', '', text)
     text = text.replace(',', '').replace('.', '')
     try:
         return int(text.strip())
@@ -15,52 +15,49 @@ def get_population(text):
         return 0
 
 def fetch_top_towns():
-    url = "https://en.wikipedia.org/wiki/List_of_cities_and_towns_in_Austria"
+    url = "https://en.wikipedia.org/wiki/Cities_in_Switzerland"
     response = requests.get(url, headers={'User-Agent': 'Mozilla/5.0'})
-    # print(f"Status code: {response.status_code}") # Removed debug print
-    # print(f"Content length: {len(response.content)}") # Removed debug print
     soup = BeautifulSoup(response.content, 'html.parser')
-    
+
     towns = []
-    
-    # print(f"Number of wikitable tables found: {len(soup.find_all('table', class_='wikitable'))}") # Removed debug print
-    
+
     for table in soup.find_all('table', class_='wikitable'):
         headers = [th.text.strip() for th in table.find_all('th')]
         if not headers:
-             # Try first row as header if no th
+            # Try first row as header if no th
             headers = [td.text.strip() for td in table.find_all('tr')[0].find_all('td')]
-
-        # print(f"Table headers: {headers}") # Removed debug print
 
         has_population_header = False
         for h in headers:
             if 'Population' in h:
                 has_population_header = True
                 break
-        
-        if 'Name' in headers and has_population_header:
-            # print("Found table with 'Name' and 'Population' headers.") # Removed debug print
+
+        if ('Name' in headers or 'Town' in headers) and has_population_header:
             try:
                 name_idx = -1
                 pop_idx = -1
-                
-                # Find Name index
+                canton_idx = -1
+
+                # Find Name or Town index
                 for i, h in enumerate(headers):
-                    if 'Name' in h:
+                    if 'Name' in h or 'Town' in h:
                         name_idx = i
-                        break 
-                
+                        break
+
                 # Find Population index (more flexibly)
                 for i, h in enumerate(headers):
                     if 'Population' in h:
                         pop_idx = i
-                        break 
-                
-                # print(f"Detected Name index: {name_idx}, Population index: {pop_idx}") # Removed debug print
-                
+                        break
+
+                # Find Canton index
+                for i, h in enumerate(headers):
+                    if 'Canton' in h:
+                        canton_idx = i
+                        break
+
                 if name_idx == -1 or pop_idx == -1:
-                    # print(f"Skipping table due to missing Name or Population header (Name_idx: {name_idx}, Pop_idx: {pop_idx})") # Removed debug print
                     continue
 
                 # Iterate rows
@@ -70,51 +67,48 @@ def fetch_top_towns():
                         name = cols[name_idx].text.strip()
                         pop_str = cols[pop_idx].text.strip()
                         population = get_population(pop_str)
-                        
-                        # print(f"  Extracted - Name: '{name}', Population Str: '{pop_str}', Population: {population}") # Removed debug print
-                        
-                        state = "Unknown"
-                        prev = table.find_previous(['h2', 'h3'])
-                        if prev:
-                            state_cand = prev.text.strip().replace('[edit]', '')
-                            if state_cand in ['Burgenland', 'Carinthia', 'Lower Austria', 'Salzburg', 'Styria', 'Tyrol', 'Upper Austria', 'Vienna', 'Vorarlberg']:
-                                state = state_cand
-                        
-                        if state == "Unknown" and name == "Vienna":
-                            state = "Vienna"
 
-                        if population > 0 and state != "Unknown":
+                        canton = "Unknown"
+                        # Try to find canton from table column if it exists
+                        if canton_idx != -1 and len(cols) > canton_idx:
+                            canton = cols[canton_idx].text.strip()
+                        else:
+                            # Fallback to finding canton from nearby header
+                            prev = table.find_previous(['h2', 'h3'])
+                            if prev:
+                                canton_cand = prev.text.strip()
+                                if canton_cand:
+                                    canton = canton_cand
+
+                        if population > 0 and canton != "Unknown":
                             towns.append({
                                 'town': name,
-                                'federal_state': state,
+                                'canton': canton,
                                 'inhabitants': population
                             })
-                            # print(f"  Added town: {name} ({population})") # Removed debug print
             except Exception as e:
-                # print(f"Error parsing table: {e}")
                 continue
 
-    # Dedup by name + state (just in case)
+    # Dedup by name + canton (just in case)
     unique_towns = {}
     for t in towns:
-        key = (t['town'], t['federal_state'])
+        key = (t['town'], t['canton'])
         if key not in unique_towns or unique_towns[key]['inhabitants'] < t['inhabitants']:
             unique_towns[key] = t
-            
+
     sorted_towns = sorted(unique_towns.values(), key=lambda x: x['inhabitants'], reverse=True)
-    # print(f"Collected {len(sorted_towns)} unique towns after deduplication and sorting.") # Removed debug print
     return sorted_towns[:200]
 
-def get_coordinates(town, state):
+def get_coordinates(town, canton):
     base_url = "https://nominatim.openstreetmap.org/search"
-    query = f"{town}, {state}, Austria"
+    query = f"{town}, {canton}, Switzerland"
     params = {
         'q': query,
         'format': 'json',
         'limit': 1
     }
     headers = {
-        'User-Agent': 'AustriaTownsFetcher/1.0'
+        'User-Agent': 'SwissTownsFetcher/1.0'
     }
     try:
         r = requests.get(base_url, params=params, headers=headers)
@@ -122,7 +116,7 @@ def get_coordinates(town, state):
             data = r.json()[0]
             return float(data['lon']), float(data['lat'])
         else:
-            params['q'] = f"{town}, Austria"
+            params['q'] = f"{town}, Switzerland"
             r = requests.get(base_url, params=params, headers=headers)
             if r.status_code == 200 and r.json():
                 data = r.json()[0]
@@ -132,44 +126,30 @@ def get_coordinates(town, state):
     return None, None
 
 def main():
-    print("Fetching towns...")
+    print("Fetching Swiss towns...")
     top_100 = fetch_top_towns()
     print(f"Found {len(top_100)} towns. Fetching coordinates...")
-    
+
     final_data = []
     for i, town in enumerate(top_100):
-        print(f"Processing {i+1}/200: {town['town']}")
-        lon, lat = get_coordinates(town['town'], town['federal_state'])
-        
-        state_map = {
-            'Burgenland': 'Burgenland',
-            'Carinthia': 'Kärnten',
-            'Lower Austria': 'Niederösterreich',
-            'Salzburg': 'Salzburg',
-            'Styria': 'Steiermark',
-            'Tyrol': 'Tirol',
-            'Upper Austria': 'Oberösterreich',
-            'Vienna': 'Wien',
-            'Vorarlberg': 'Vorarlberg'
-        }
-        
-        german_state = state_map.get(town['federal_state'], town['federal_state'])
-        
+        print(f"Processing {i+1}/{len(top_100)}: {town['town']}")
+        lon, lat = get_coordinates(town['town'], town['canton'])
+
         if lon is None:
-            query = f"{town['town']}, {german_state}, Austria"
+            query = f"{town['town']}, {town['canton']}, Switzerland"
             try:
-                r = requests.get("https://nominatim.openstreetmap.org/search", 
+                r = requests.get("https://nominatim.openstreetmap.org/search",
                                params={'q': query, 'format': 'json', 'limit': 1},
-                               headers={'User-Agent': 'AustriaTownsFetcher/1.0'})
+                               headers={'User-Agent': 'SwissTownsFetcher/1.0'})
                 if r.status_code == 200 and r.json():
                     d = r.json()[0]
                     lon, lat = float(d['lon']), float(d['lat'])
             except:
                 pass
-        
+
         entry = {
             "town": town['town'],
-            "federal_state": german_state,
+            "canton": town['canton'],
             "longitude": lon,
             "latitude": lat,
             "inhabitants": town['inhabitants']
@@ -178,17 +158,17 @@ def main():
         time.sleep(0.1)
 
     df = pd.DataFrame(final_data)
-    print("\n--- Extracted Towns DataFrame ---")
+    print("\n--- Extracted Swiss Towns DataFrame ---")
     print(df.to_string())
     print("--- End DataFrame ---")
-    
+
     # Keeping the JSON output for backward compatibility/other uses
     print("\n--- Raw JSON Output ---")
     print(json.dumps(final_data, indent=4))
     print("--- End Raw JSON Output ---")
-    
+
     # Save the DataFrame to a CSV file
-    csv_filename = "austria_towns.csv"
+    csv_filename = "swiss_towns.csv"
     df.to_csv(csv_filename, index=False, encoding="utf-8")
     print(f"\n--- Saved DataFrame to {csv_filename} ---")
 
