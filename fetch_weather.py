@@ -76,6 +76,7 @@ print(f"API URL: {API_URL}")
 
 try:
     response = requests.get(API_URL, params=params)
+    print(f"Full request URL: {response.url}")
     response.raise_for_status()
     data = response.json()
 
