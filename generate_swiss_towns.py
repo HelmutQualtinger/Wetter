@@ -64,7 +64,7 @@ def fetch_top_towns():
                 for row in table.find_all('tr')[1:]:
                     cols = row.find_all(['td', 'th'])
                     if len(cols) > max(name_idx, pop_idx):
-                        name = cols[name_idx].text.strip()
+                        name = re.sub(r'\[[^\]]*\]|\([^)]*\)', '', cols[name_idx].text).strip()
                         pop_str = cols[pop_idx].text.strip()
                         population = get_population(pop_str)
 

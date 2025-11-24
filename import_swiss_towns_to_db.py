@@ -1,40 +1,33 @@
 import pandas as pd
-from sqlalchemy import create_engine
 import os
 from dotenv import load_dotenv
+from sqlalchemy import create_engine
+import pymysql # Use pymysql as the MySQL driver
 
-load_dotenv()  # Load environment variables from .env
+load_dotenv()
 
-# MySQL connection settings
+# MySQL connection details from environment variables
 MYSQL_USER = os.getenv("MYSQL_USER")
 MYSQL_PASSWORD = os.getenv("MYSQL_PASSWORD")
 MYSQL_HOST = os.getenv("MYSQL_HOST")
-MYSQL_PORT = int(os.getenv("MYSQL_PORT"))
-GEODATA_DATABASE = "geodata"
-TABLE_NAME = "swiss_towns_new"
+MYSQL_PORT = os.getenv("MYSQL_PORT", 3306) # Default MySQL port
 
-# Create SQLAlchemy engine for the geodata database
-connection_string = f"mysql+pymysql://{MYSQL_USER}:{MYSQL_PASSWORD}@{MYSQL_HOST}:{MYSQL_PORT}/{GEODATA_DATABASE}"
-engine = create_engine(connection_string)
+def import_swiss_towns_to_db():
+    # Read the CSV file into a pandas DataFrame
+    df = pd.read_csv('swiss_towns.csv')
 
-print(f"Reading swiss_towns.csv...")
-try:
-    # Read the CSV file
-    df = pd.read_csv("swiss_towns.csv")
-    print(f"✓ Successfully read {len(df)} rows from swiss_towns.csv")
+    # Create a connection string for MySQL using pymysql
+    db_connection_str = f'mysql+pymysql://{MYSQL_USER}:{MYSQL_PASSWORD}@{MYSQL_HOST}:{MYSQL_PORT}/geodata'
+    db_connection = create_engine(db_connection_str)
 
-    # Display sample data
-    print("\nSample data:")
-    print(df.head())
+    # Write the data to a new table named 'swiss_towns_new' in the 'geodata' database
+    # If the table already exists, it will be replaced
+    df.to_sql('swiss_towns_new', db_connection, if_exists='replace', index=False)
 
-    # Import to MySQL database
-    print(f"\n✓ Importing data to {GEODATA_DATABASE}.{TABLE_NAME}...")
-    df.to_sql(TABLE_NAME, con=engine, if_exists='replace', index=False)
-    print(f"✓ Successfully imported {len(df)} rows to {GEODATA_DATABASE}.{TABLE_NAME}")
+    print("Swiss towns data imported successfully into 'swiss_towns_new' table in 'geodata' database.")
 
-except FileNotFoundError:
-    print("✗ Error: swiss_towns.csv not found")
-    exit()
-except Exception as e:
-    print(f"✗ Error: {e}")
-    exit()
+    # No need to explicitly close connection with sqlalchemy engine in this context
+    # The engine manages the connections
+
+if __name__ == "__main__":
+    import_swiss_towns_to_db()

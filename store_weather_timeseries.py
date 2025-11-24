@@ -173,12 +173,12 @@ try:
     MYSQL_PASSWORD = os.getenv("MYSQL_PASSWORD")
     MYSQL_HOST = os.getenv("MYSQL_HOST")
     MYSQL_PORT = int(os.getenv("MYSQL_PORT"))
-    MYSQL_DATABASE = "geodata"
+    MYSQL_DATABASE = "OpenMeteo"
 
     engine = create_engine(f"mysql+pymysql://{MYSQL_USER}:{MYSQL_PASSWORD}@{MYSQL_HOST}:{MYSQL_PORT}/{MYSQL_DATABASE}")
 
-    # Append to OpenMeteon table (keep historical data)
-    table_name = "OpenMeteon"
+    # Append to weather_records table (keep historical data)
+    table_name = "weather_records"
     result_df.to_sql(table_name, con=engine, if_exists='append', index=False)
 
     print(f"\n✓ Successfully stored {len(result_df)} weather records")

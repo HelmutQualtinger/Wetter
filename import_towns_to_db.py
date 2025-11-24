@@ -26,7 +26,8 @@ try:
     print("\nSample data:")
     print(df.head())
 
-    # Add rank column
+    # Add ran
+    # k column
     df = df.sort_values("inhabitants", ascending=False).reset_index(drop=True)
     df.insert(0, "rank", range(1, len(df) + 1))
 
