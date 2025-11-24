@@ -44,7 +44,18 @@ try:
         INSERT INTO all_towns (town, state, longitude, latitude, inhabitants, country)
         SELECT 
             town,
-            federal_state AS state,
+            CASE
+                WHEN federal_state = 'Burgenland' THEN 'B'
+                WHEN federal_state = 'Kärnten' THEN 'K'
+                WHEN federal_state = 'Niederösterreich' THEN 'NÖ'
+                WHEN federal_state = 'Oberösterreich' THEN 'OÖ'
+                WHEN federal_state = 'Salzburg' THEN 'S'
+                WHEN federal_state = 'Steiermark' THEN 'ST'
+                WHEN federal_state = 'Tirol' THEN 'T'
+                WHEN federal_state = 'Vorarlberg' THEN 'V'
+                WHEN federal_state = 'Wien' THEN 'W'
+                ELSE federal_state
+            END AS state,
             longitude,
             latitude,
             inhabitants,
