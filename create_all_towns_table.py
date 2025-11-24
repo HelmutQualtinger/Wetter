@@ -83,6 +83,41 @@ try:
         connection.commit()
         print("✓ Data from 'swiss_towns' inserted into 'all_towns'.")
 
+        # Insert data from german_towns_new
+        insert_german_sql = """
+        INSERT INTO all_towns (town, state, longitude, latitude, inhabitants, country)
+        SELECT 
+            town,
+            CASE
+                WHEN federal_state = 'Baden-Württemberg' THEN 'BW'
+                WHEN federal_state = 'Bavaria' THEN 'BY'
+                WHEN federal_state = 'Berlin' THEN 'BE'
+                WHEN federal_state = 'Brandenburg' THEN 'BB'
+                WHEN federal_state = 'Bremen' THEN 'HB'
+                WHEN federal_state = 'Hamburg' THEN 'HH'
+                WHEN federal_state = 'Hesse' THEN 'HE'
+                WHEN federal_state = 'Mecklenburg-Vorpommern' THEN 'MV'
+                WHEN federal_state = 'Lower Saxony' THEN 'NI'
+                WHEN federal_state = 'North Rhine-Westphalia' THEN 'NW'
+                WHEN federal_state = 'Rhineland-Palatinate' THEN 'RP'
+                WHEN federal_state = 'Saarland' THEN 'SL'
+                WHEN federal_state = 'Saxony' THEN 'SN'
+                WHEN federal_state = 'Saxony-Anhalt' THEN 'ST'
+                WHEN federal_state = 'Schleswig-Holstein' THEN 'SH'
+                WHEN federal_state = 'Thuringia' THEN 'TH'
+                ELSE federal_state
+            END AS state,
+            longitude,
+            latitude,
+            inhabitants,
+            'DE' AS country
+        FROM 
+            german_towns_new;
+        """
+        connection.execute(text(insert_german_sql))
+        connection.commit()
+        print("✓ Data from 'german_towns_new' inserted into 'all_towns'.")
+
         # Verify insertion and content
         print("\nSample data from 'all_towns' (first 10 rows):")
         result = connection.execute(text("SELECT * FROM all_towns LIMIT 10"))
